@@ -1,3 +1,7 @@
+openldap-ltb (2.4.44.2+ripple) UNRELEASED; urgency=medium
+
+  * Ripple fork
+
 openldap-ltb (2.4.44.1) UNRELEASED; urgency=medium
 
   * New upstream release.
