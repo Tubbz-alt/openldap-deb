@@ -1,3 +1,7 @@
+openldap-ltb (2.4.44.3+ripple) UNRELEASED; urgency=medium
+
+  * Extending ppolicy overlay to write sambaNTPassword
+
 openldap-ltb (2.4.44.2+ripple) UNRELEASED; urgency=medium
 
   * Ripple fork
