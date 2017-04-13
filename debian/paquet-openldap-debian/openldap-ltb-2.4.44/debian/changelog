@@ -1,3 +1,8 @@
+openldap-ltb (2.4.44.4+ripple) UNRELEASED; urgency=medium
+
+  * Gracefully handle users without the sambaSamAccount objectClass
+  * Intercept and hash passwords during initial user creation
+
 openldap-ltb (2.4.44.3+ripple) UNRELEASED; urgency=medium
 
   * Extending ppolicy overlay to write sambaNTPassword
