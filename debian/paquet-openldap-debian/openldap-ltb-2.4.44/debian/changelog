@@ -1,3 +1,7 @@
+openldap-ltb (2.4.44.5+ripple) UNRELEASED; urgency=medium
+
+  * Remove samba schema and use custom rippleWifiPassword attribute
+
 openldap-ltb (2.4.44.4+ripple) UNRELEASED; urgency=medium
 
   * Gracefully handle users without the sambaSamAccount objectClass

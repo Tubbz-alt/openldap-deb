@@ -18,8 +18,8 @@
  
 +
 +/* Ripple WiFi */
-+static AttributeDescription *ad_sambaNTPassword = NULL;
-+static ObjectClass *oc_sambaSamAccount = NULL;
++static AttributeDescription *ad_rippleWifiPassword = NULL;
++static ObjectClass *oc_rippleOrgPerson = NULL;
 +static int wifiSync = 0;
 +
 +static const char hex[] = "0123456789abcdef";
@@ -76,8 +76,8 @@
  			}
  
 +			/* Ripple WiFi */
-+			if ( (wifiSync) && (is_entry_objectclass(op->ora_e, oc_sambaSamAccount, 0)) ) {
-+				Debug( LDAP_DEBUG_TRACE, "ppolicy_ripple: new user has sambaSamAccount objectClass\n", 0, 0, 0 );
++			if ( (wifiSync) && (is_entry_objectclass(op->ora_e, oc_rippleOrgPerson, 0)) ) {
++				Debug( LDAP_DEBUG_TRACE, "ppolicy_ripple: new user has rippleOrgPerson objectClass\n", 0, 0, 0 );
 +
 +				struct berval *keys;
 +				ber_len_t j, l;
@@ -105,7 +105,7 @@
 +				keys = (BerVarray) ch_malloc( 2 * sizeof( struct berval ) );
 +				BER_BVZERO( &keys[1] );
 +				nthash( &pwd, keys );
-+				attr_merge_one( op->ora_e, ad_sambaNTPassword, keys, keys );
++				attr_merge_one( op->ora_e, ad_rippleWifiPassword, keys, keys );
 +
 +				ch_free(wcs);
 +			}
@@ -119,7 +119,7 @@
  			}
 +
 +			/* Ripple WiFi */
-+			if ( (wifiSync) && (is_entry_objectclass(e, oc_sambaSamAccount, 0 )) ) {
++			if ( (wifiSync) && (is_entry_objectclass(e, oc_rippleOrgPerson, 0 )) ) {
 +				struct berval *keys;
 +				ber_len_t j, l;
 +				wchar_t *wcs, wc;
@@ -146,7 +146,7 @@
 +				mods = (Modifications *) ch_calloc( sizeof( Modifications ), 1 );
 +				mods->sml_op = LDAP_MOD_REPLACE;
 +				mods->sml_flags = SLAP_MOD_INTERNAL;
-+				mods->sml_desc = ad_sambaNTPassword;
++				mods->sml_desc = ad_rippleWifiPassword;
 +				mods->sml_numvals = 1;
 +
 +				keys = (BerVarray) ch_malloc( 2 * sizeof( struct berval ) );
@@ -170,27 +170,27 @@
  	ov_count++;
  
 +	/* Ripple WiFi */
-+	if ( oc_sambaSamAccount == NULL ) {
-+		Debug( LDAP_DEBUG_TRACE, "ppolicy_ripple: looking up sambaSamAccount objectClass\n", 0, 0, 0 );
-+		oc_sambaSamAccount = oc_find( "sambaSamAccount" );
-+		if ( !oc_sambaSamAccount ) {
++	if ( oc_rippleOrgPerson == NULL ) {
++		Debug( LDAP_DEBUG_TRACE, "ppolicy_ripple: looking up rippleOrgPerson objectClass\n", 0, 0, 0 );
++		oc_rippleOrgPerson = oc_find( "rippleOrgPerson" );
++		if ( !oc_rippleOrgPerson ) {
 +			Debug( LDAP_DEBUG_ANY, "ppolicy_ripple: "
-+				"unable to find \"sambaSamAccount\" objectClass.\n", 0, 0, 0 );
++				"unable to find \"rippleOrgPerson\" objectClass.\n", 0, 0, 0 );
 +		}
 +	}
-+	if ( ad_sambaNTPassword == NULL ) {
-+		Debug( LDAP_DEBUG_TRACE, "ppolicy_ripple: looking up sambaNTPassword attribute description\n", 0, 0, 0 );
++	if ( ad_rippleWifiPassword == NULL ) {
++		Debug( LDAP_DEBUG_TRACE, "ppolicy_ripple: looking up rippleWifiPassword attribute description\n", 0, 0, 0 );
 +		const char *err;
 +		int code;
 +
-+		code = slap_str2ad("sambaNTPassword", &ad_sambaNTPassword, &err);
++		code = slap_str2ad("rippleWifiPassword", &ad_rippleWifiPassword, &err);
 +		if ( code != LDAP_SUCCESS ) {
 +			Debug( LDAP_DEBUG_ANY, "ppolicy_ripple: "
-+				"unable to find sambaNTPassword attributeType: %s (%d).\n",
++				"unable to find rippleWifiPassword attributeType: %s (%d).\n",
 +				err, code, 0 );
 +		}
 +	}
-+	if ( (oc_sambaSamAccount != NULL) && (ad_sambaNTPassword != NULL) ) {
++	if ( (oc_rippleOrgPerson != NULL) && (ad_rippleWifiPassword != NULL) ) {
 +		Debug( LDAP_DEBUG_TRACE, "ppolicy_ripple: wifiSync is supported\n", 0, 0, 0 );
 +		wifiSync = 1;
 +	} else {
