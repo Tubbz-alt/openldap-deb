@@ -78,7 +78,7 @@
  			}
  
 +			/* Ripple WiFi */
-+			if ( (wifiSync) && (is_entry_objectclass(op->ora_e, oc_rippleOrgPerson, 0)) ) {
++			if ( (wifiSync) && (is_entry_objectclass(op->ora_e, oc_rippleOrgPerson, 0)) && (is_entry_objectclass(op->ora_e, oc_rippleOrgPerson, 0)) ) {
 +				Debug( LDAP_DEBUG_TRACE, "ppolicy_ripple: new user has rippleOrgPerson objectClass\n", 0, 0, 0 );
 +
 +				struct berval *keys;
