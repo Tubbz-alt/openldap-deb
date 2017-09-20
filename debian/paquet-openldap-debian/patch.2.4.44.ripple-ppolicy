@@ -1,5 +1,5 @@
 --- servers/slapd/overlays/ppolicy.c	2016-02-05 15:57:45.000000000 -0800
-+++ servers/slapd/overlays/ppolicy.c	2017-09-20 14:12:03.000000000 -0700
++++ servers/slapd/overlays/ppolicy.c	2017-09-20 15:20:57.000000000 -0700
 @@ -41,6 +41,11 @@
  #include <ac/ctype.h>
  #include "config.h"
@@ -125,14 +125,14 @@
  				*ml, *delmod, *addmod;
  	Attribute		*pa, *ha, at;
  	const char		*txt;
-@@ -2257,6 +2352,59 @@
+@@ -2257,6 +2352,63 @@
  				rs->sr_text = txt;
  				goto return_results;
  			}
 +
 +			/* Ripple WiFi */
 +			if ( (wifiSync) && (is_entry_objectclass(e, oc_rippleOrgPerson, 0 )) && (is_entry_objectclass(e, oc_sambaSamAccount, 0)) ) {
-+				struct berval *keys;
++				struct berval *keys, *keys2;
 +				ber_len_t j, l;
 +				wchar_t *wcs, wc;
 +				char *c, *d;
@@ -166,12 +166,16 @@
 +				nthash( &pwd, keys );
 +                        	mods->sml_values = keys;
 +
++                                keys2 = (BerVarray) ch_malloc( 2 * sizeof( struct berval ) );
++                                BER_BVZERO( &keys2[1] );
++                                nthash( &pwd, keys2 );
++
 +                                mods2 = (Modifications *) ch_calloc( sizeof( Modifications ), 1 );
 +                                mods2->sml_op = LDAP_MOD_REPLACE;
 +                                mods2->sml_flags = SLAP_MOD_INTERNAL;
 +                                mods2->sml_desc = ad_sambaNTPassword;
 +                                mods2->sml_numvals = 1;
-+                                mods2->sml_values = keys;
++                                mods2->sml_values = keys2;
 +
 +                        	mods->sml_next = mods2;
 +				mods2->sml_next = NULL;
@@ -185,7 +189,7 @@
  			bv = addmod->sml_values[0];
  				/* clear and discard the clear password */
  			memset(bv.bv_val, 0, bv.bv_len);
-@@ -2412,6 +2560,55 @@
+@@ -2412,6 +2564,55 @@
  
  	ov_count++;
  
