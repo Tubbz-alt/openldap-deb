@@ -1,5 +1,5 @@
---- /Users/dan/ripple/openldap-deb/debian/tmp/openldap-2.4.44/servers/slapd/overlays/ppolicy.c	2016-02-05 15:57:45.000000000 -0800
-+++ /Users/dan/ripple/openldap-deb/debian/paquet-openldap-debian/openldap-ltb-2.4.44/servers/slapd/overlays/ppolicy.c	2017-09-20 14:12:03.000000000 -0700
+--- servers/slapd/overlays/ppolicy.c	2016-02-05 15:57:45.000000000 -0800
++++ servers/slapd/overlays/ppolicy.c	2017-09-20 14:12:03.000000000 -0700
 @@ -41,6 +41,11 @@
  #include <ac/ctype.h>
  #include "config.h"
