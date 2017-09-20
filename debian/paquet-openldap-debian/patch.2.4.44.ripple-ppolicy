@@ -1,5 +1,5 @@
---- servers/slapd/overlays/ppolicy.c	2016-02-05 15:57:45.000000000 -0800
-+++ servers/slapd/overlays/ppolicy.c	2017-09-20 13:36:59.000000000 -0700
+--- /Users/dan/ripple/openldap-deb/debian/tmp/openldap-2.4.44/servers/slapd/overlays/ppolicy.c	2016-02-05 15:57:45.000000000 -0800
++++ /Users/dan/ripple/openldap-deb/debian/paquet-openldap-debian/openldap-ltb-2.4.44/servers/slapd/overlays/ppolicy.c	2017-09-20 14:12:03.000000000 -0700
 @@ -41,6 +41,11 @@
  #include <ac/ctype.h>
  #include "config.h"
@@ -125,7 +125,7 @@
  				*ml, *delmod, *addmod;
  	Attribute		*pa, *ha, at;
  	const char		*txt;
-@@ -2257,6 +2352,58 @@
+@@ -2257,6 +2352,59 @@
  				rs->sr_text = txt;
  				goto return_results;
  			}
@@ -166,11 +166,12 @@
 +				nthash( &pwd, keys );
 +                        	mods->sml_values = keys;
 +
-+                               mods2 = (Modifications *) ch_calloc( sizeof( Modifications ), 1 );
-+                               mods2->sml_op = LDAP_MOD_REPLACE;
-+                               mods2->sml_flags = SLAP_MOD_INTERNAL;
-+                               mods2->sml_desc = ad_sambaNTPassword;
-+                               mods2->sml_numvals = 1;
++                                mods2 = (Modifications *) ch_calloc( sizeof( Modifications ), 1 );
++                                mods2->sml_op = LDAP_MOD_REPLACE;
++                                mods2->sml_flags = SLAP_MOD_INTERNAL;
++                                mods2->sml_desc = ad_sambaNTPassword;
++                                mods2->sml_numvals = 1;
++                                mods2->sml_values = keys;
 +
 +                        	mods->sml_next = mods2;
 +				mods2->sml_next = NULL;
@@ -184,7 +185,7 @@
  			bv = addmod->sml_values[0];
  				/* clear and discard the clear password */
  			memset(bv.bv_val, 0, bv.bv_len);
-@@ -2412,6 +2559,55 @@
+@@ -2412,6 +2560,55 @@
  
  	ov_count++;
  
@@ -217,7 +218,7 @@
 +                                "unable to find \"sambaSamAccount\" objectClass.\n", 0, 0, 0 );
 +                }
 +	}
-+	if ( ad_sambaNtPassword == NULL ) {
++	if ( ad_sambaNTPassword == NULL ) {
 +                Debug( LDAP_DEBUG_TRACE, "ppolicy_ripple: looking up sambaNTPassword attribute description\n", 0, 0, 0 );
 +                const char *err;
 +                int code;
