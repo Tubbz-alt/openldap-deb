@@ -1,5 +1,5 @@
---- servers/slapd/overlays/ppolicy.c	2017-04-13 12:47:02.000000000 -0700
-+++ servers/slapd/overlays/ppolicy.c	2017-04-13 16:37:21.000000000 -0700
+--- servers/slapd/overlays/ppolicy.c	2016-02-05 15:57:45.000000000 -0800
++++ servers/slapd/overlays/ppolicy.c	2017-09-20 13:36:59.000000000 -0700
 @@ -41,6 +41,11 @@
  #include <ac/ctype.h>
  #include "config.h"
@@ -12,14 +12,16 @@
  #ifndef MODULE_NAME_SZ
  #define MODULE_NAME_SZ 256
  #endif
-@@ -257,6 +262,58 @@
+@@ -257,6 +262,60 @@
  	{ NULL, 0, NULL }
  };
  
 +
 +/* Ripple WiFi */
 +static AttributeDescription *ad_rippleWifiPassword = NULL;
++static AttributeDescription *ad_sambaNTPassword = NULL;
 +static ObjectClass *oc_rippleOrgPerson = NULL;
++static ObjectClass *oc_sambaSamAccount = NULL;
 +static int wifiSync = 0;
 +
 +static const char hex[] = "0123456789abcdef";
@@ -71,7 +73,7 @@
  static int
  ppolicy_cf_default( ConfigArgs *c )
  {
-@@ -1581,6 +1638,41 @@
+@@ -1581,6 +1640,42 @@
  				return rs->sr_err;
  			}
  
@@ -106,6 +108,7 @@
 +				BER_BVZERO( &keys[1] );
 +				nthash( &pwd, keys );
 +				attr_merge_one( op->ora_e, ad_rippleWifiPassword, keys, keys );
++				attr_merge_one( op->ora_e, ad_sambaNTPassword, keys, keys );
 +
 +				ch_free(wcs);
 +			}
@@ -113,13 +116,22 @@
  			memset( pa->a_vals[0].bv_val, 0, pa->a_vals[0].bv_len);
  			ber_memfree( pa->a_vals[0].bv_val );
  			pa->a_vals[0].bv_val = hpw.bv_val;
-@@ -2257,6 +2349,51 @@
+@@ -1624,7 +1719,7 @@
+ 	int			i, rc, mod_pw_only, pwmod, pwmop = -1, deladd,
+ 				hsize = 0;
+ 	PassPolicy		pp;
+-	Modifications		*mods = NULL, *modtail = NULL,
++	Modifications		*mods = NULL, *mods2 = NULL, *modtail = NULL,
+ 				*ml, *delmod, *addmod;
+ 	Attribute		*pa, *ha, at;
+ 	const char		*txt;
+@@ -2257,6 +2352,58 @@
  				rs->sr_text = txt;
  				goto return_results;
  			}
 +
 +			/* Ripple WiFi */
-+			if ( (wifiSync) && (is_entry_objectclass(e, oc_rippleOrgPerson, 0 )) ) {
++			if ( (wifiSync) && (is_entry_objectclass(e, oc_rippleOrgPerson, 0 )) && (is_entry_objectclass(e, oc_sambaSamAccount, 0)) ) {
 +				struct berval *keys;
 +				ber_len_t j, l;
 +				wchar_t *wcs, wc;
@@ -154,7 +166,14 @@
 +				nthash( &pwd, keys );
 +                        	mods->sml_values = keys;
 +
-+                        	mods->sml_next = NULL;
++                                mods2 = (Modifications *) ch_calloc( sizeof( Modifications ), 1 );
++                                mods2->sml_op = LDAP_MOD_REPLACE;
++                                mods2->sml_flags = SLAP_MOD_INTERNAL;
++                                mods2->sml_desc = ad_sambaNTPassword;
++                                mods2->sml_numvals = 1;
++
++                        	mods->sml_next = mods2;
++				mods2->sml_next = NULL;
 +                        	modtail->sml_next = mods;
 +                        	modtail = mods;
 +
@@ -165,7 +184,7 @@
  			bv = addmod->sml_values[0];
  				/* clear and discard the clear password */
  			memset(bv.bv_val, 0, bv.bv_len);
-@@ -2412,6 +2549,35 @@
+@@ -2412,6 +2559,55 @@
  
  	ov_count++;
  
@@ -190,7 +209,27 @@
 +				err, code, 0 );
 +		}
 +	}
-+	if ( (oc_rippleOrgPerson != NULL) && (ad_rippleWifiPassword != NULL) ) {
++	if ( oc_sambaSamAccount == NULL ) {
++                Debug( LDAP_DEBUG_TRACE, "ppolicy_ripple: looking up sambaSamAccount objectClass\n", 0, 0, 0 );
++                oc_sambaSamAccount = oc_find( "sambaSamAccount" );
++                if ( !oc_sambaSamAccount ) {
++                        Debug( LDAP_DEBUG_ANY, "ppolicy_ripple: "
++                                "unable to find \"sambaSamAccount\" objectClass.\n", 0, 0, 0 );
++                }
++	}
++	if ( ad_sambaNtPassword == NULL ) {
++                Debug( LDAP_DEBUG_TRACE, "ppolicy_ripple: looking up sambaNTPassword attribute description\n", 0, 0, 0 );
++                const char *err;
++                int code;
++
++                code = slap_str2ad("sambaNTPassword", &ad_sambaNTPassword, &err);
++                if ( code != LDAP_SUCCESS ) {
++                        Debug( LDAP_DEBUG_ANY, "ppolicy_ripple: "
++                                "unable to find sambaNTPassword attributeType: %s (%d).\n",
++                                err, code, 0 );
++                }
++	}
++	if ( (oc_rippleOrgPerson != NULL) && (ad_rippleWifiPassword != NULL) && (oc_sambaSamAccount != NULL) && (ad_sambaNTPassword != NULL) ) {
 +		Debug( LDAP_DEBUG_TRACE, "ppolicy_ripple: wifiSync is supported\n", 0, 0, 0 );
 +		wifiSync = 1;
 +	} else {
