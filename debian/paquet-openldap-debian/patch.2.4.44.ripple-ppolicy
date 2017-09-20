@@ -166,11 +166,11 @@
 +				nthash( &pwd, keys );
 +                        	mods->sml_values = keys;
 +
-+                                mods2 = (Modifications *) ch_calloc( sizeof( Modifications ), 1 );
-+                                mods2->sml_op = LDAP_MOD_REPLACE;
-+                                mods2->sml_flags = SLAP_MOD_INTERNAL;
-+                                mods2->sml_desc = ad_sambaNTPassword;
-+                                mods2->sml_numvals = 1;
++                               mods2 = (Modifications *) ch_calloc( sizeof( Modifications ), 1 );
++                               mods2->sml_op = LDAP_MOD_REPLACE;
++                               mods2->sml_flags = SLAP_MOD_INTERNAL;
++                               mods2->sml_desc = ad_sambaNTPassword;
++                               mods2->sml_numvals = 1;
 +
 +                        	mods->sml_next = mods2;
 +				mods2->sml_next = NULL;
