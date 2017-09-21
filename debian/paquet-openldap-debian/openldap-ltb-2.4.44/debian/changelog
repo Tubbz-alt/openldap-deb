@@ -1,3 +1,11 @@
+openldap-ltb (2.4.44.7+ripple) UNRELEASED; urgency=medium
+
+  * Additional sambaSamAccount verification
+
+openldap-ltb (2.4.44.6+ripple) UNRELEASED; urgency=medium
+
+  * Write to both rippleWifiPassword _and_ sambaNTPassword
+
 openldap-ltb (2.4.44.5+ripple) UNRELEASED; urgency=medium
 
   * Remove samba schema and use custom rippleWifiPassword attribute
